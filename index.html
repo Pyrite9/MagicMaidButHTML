@@ -63,16 +63,50 @@
         }
 
         .blackbox {
+            white-space: nowrap;
             position: absolute;
             writing-mode: vertical-rl;
             color: white;
             background-color: #2e2e2e;
             font-size: 3vw;
-            padding: 2vw 1.5vw;
+            padding: 4vw 1.5vw;
         }
 
-        .nobackground {
+        .blackbox-center {
+            white-space: nowrap;
             position: absolute;
+            writing-mode: vertical-rl;
+            color: white;
+            background-color: #2e2e2e;
+            font-size: 3vw;
+            padding: 4vw 1.5vw;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+        }        
+
+        .center {
+            white-space: nowrap;
+            position: absolute;
+            writing-mode: vertical-rl;
+            color: #2e2e2e;
+            background-color: white;
+            font-size: 2vw;
+            padding: 4vw 7vw;
+            border-radius: 40%;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+        }
+        .nobackground {
+            white-space: nowrap;
+            position: absolute;
+            writing-mode: vertical-rl;
+            color: white;
+            font-size: 3vw;
+            top: 10%;
+            right: 5%;
+            
         }
     </style>
 </head>
@@ -95,12 +129,12 @@
             { time: 6.2, text: "다과를", type: "white-bottom", triggered: false },
             { time: 9, text: "소박하지만", type: "white-top", triggered: false },
             { time: 9, text: "화려한 무대", type: "white-bottom", triggered: false },
-            { time: 11.6, text: "과거와", type: "blackbox", temp: true, triggered: false },
-            { time: 12.2, text: "바이바이바이", type: "blackbox", triggered: false },
-            { time: 13, text: "지금을", type: "blackbox", triggered: false },
-            { time: 13.4, text: "사랑사랑사랑해", type: "blackbox", triggered: false },
-            { time: 15, text: "말할 수 있다면 아픔과", type: "blackbox", triggered: false },
-            { time: 16.3, text: "바이바이바이", type: "blackbox", triggered: false },
+            { time: 11.6, text: "과거와", type: "blackbox-center", triggered: false },
+            { time: 12.2, text: "바이바이바이", type: "blackbox", triggered: false, top: "0%", left: "90%" },
+            { time: 13, text: "지금을", type: "blackbox", triggered: false, top: "4%", left: "80%"},
+            { time: 13.4, text: "사랑사랑사랑해", type: "blackbox", triggered: false, top: "35%", left: "73.5%"},
+            { time: 15, text: "말할 수 있다면 아픔과", type: "blackbox", triggered: false, top: "5%", left: "63.5%" },
+            { time: 16.3, text: "바이바이바이", type: "blackbox", triggered: false, top: "41%", left: "56.5%" },
             { time: 17.3, text: "오늘은 마법에 걸린 메이드", type: "center", triggered: false },
             { time: 20, text: "소박하지만 화려한 무대", type: "nobackground", triggered: false }
         ];
@@ -152,21 +186,40 @@
                             timeline[t].triggered = true;
                         }
 
-                        if(timeline[t].temp) {
-                            el.dataset.temp = "true";
-                        }     
-
-                        if(timeline[t].type == "blackbox") {
+                        if(timeline[t].type == "blackbox-center") {
                             const delWhite = mvContainer.querySelectorAll('.white-top, .white-bottom');
                             delWhite.forEach(el => el.remove());
-
-                            const delTemp = mvContainer.querySelector('[data-temp="true"]');
-                            if (delTemp) delTemp.remove();
+                            
                             mvContainer.appendChild(el);
                             timeline[t].triggered = true;
                         }
 
+                        if(timeline[t].type == "blackbox") {
+                            const old = mvContainer.querySelector('.blackbox-center');
+                            if (old) old.remove();
 
+                            el.style.top = timeline[t].top;
+                            el.style.left = timeline[t].left;
+                            
+                            mvContainer.appendChild(el);
+                            timeline[t].triggered = true;
+                        }
+
+                        if(timeline[t].type == "center") {
+                            const old = mvContainer.querySelectorAll('.blackbox');
+                            old.forEach(el => el.remove());
+
+                            mvContainer.appendChild(el);
+                            timeline[t].triggered = true;
+                        }
+
+                        if(timeline[t].type == "nobackground") {
+                            const old = mvContainer.querySelector('.center');
+                            if (old) old.remove();
+
+                            mvContainer.appendChild(el);
+                            timeline[t].triggered = true;
+                        }
                    
                     }
                 }
