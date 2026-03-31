@@ -108,46 +108,55 @@
             right: 5%;
             
         }
+
+        .teto {
+            position: absolute;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body>
     <div class="mv-container">
         <!-- 여기에 가사 레이어들이 들어갈 예정 -->
+         <img class="teto">
     </div>
     <div class="timeBar">
         <p id="playTime"></p>
         <button id="playButton">재생</button>
+        <audio id="bgm" src="MM.mp3"></audio>
     </div>
     
     <script>
         const timeline = [
             { time: 0, text: "오늘은 마법에", type: "white-top", triggered: false },
             { time: 0, text: "걸린 메이드", type: "white-bottom", triggered: false },
-            { time: 3.5, text: "밤에 반짝이는", type: "white-top", triggered: false },
-            { time: 3.5, text: "별의 장막", type: "white-bottom", triggered: false },
-            { time: 6.2, text: "특별한 말과", type: "white-top", triggered: false },
-            { time: 6.2, text: "다과를", type: "white-bottom", triggered: false },
-            { time: 9, text: "소박하지만", type: "white-top", triggered: false },
-            { time: 9, text: "화려한 무대", type: "white-bottom", triggered: false },
-            { time: 11.6, text: "과거와", type: "blackbox-center", triggered: false },
-            { time: 12.2, text: "바이바이바이", type: "blackbox", triggered: false, top: "0%", left: "90%" },
-            { time: 13, text: "지금을", type: "blackbox", triggered: false, top: "4%", left: "80%"},
-            { time: 13.4, text: "사랑사랑사랑해", type: "blackbox", triggered: false, top: "35%", left: "73.5%"},
-            { time: 15, text: "말할 수 있다면 아픔과", type: "blackbox", triggered: false, top: "5%", left: "63.5%" },
-            { time: 16.3, text: "바이바이바이", type: "blackbox", triggered: false, top: "41%", left: "56.5%" },
-            { time: 17.3, text: "오늘은 마법에 걸린 메이드", type: "center", triggered: false },
-            { time: 20, text: "소박하지만 화려한 무대", type: "nobackground", triggered: false }
+            { time: 2.6, text: "밤에 반짝이는", type: "white-top", triggered: false },
+            { time: 2.6, text: "별의 장막", type: "white-bottom", triggered: false },
+            { time: 5.3, text: "특별한 말과", type: "white-top", triggered: false },
+            { time: 5.3, text: "다과를", type: "white-bottom", triggered: false },
+            { time: 8.1, text: "소박하지만", type: "white-top", triggered: false },
+            { time: 8.1, text: "화려한 무대", type: "white-bottom", triggered: false },
+            { time: 10.7, text: "과거와", type: "blackbox-center", triggered: false },
+            { time: 11.3, text: "바이바이바이", type: "blackbox", triggered: false, top: "0%", left: "90%" },
+            { time: 12.1, text: "지금을", type: "blackbox", triggered: false, top: "4%", left: "80%"},
+            { time: 12.5, text: "사랑사랑사랑해", type: "blackbox", triggered: false, top: "35%", left: "73.5%"},
+            { time: 14.1, text: "말할 수 있다면 아픔과", type: "blackbox", triggered: false, top: "5%", left: "63.5%" },
+            { time: 15.4, text: "바이바이바이", type: "blackbox", triggered: false, top: "41%", left: "56.5%" },
+            { time: 16.4, text: "오늘은 마법에 걸린 메이드", type: "center", triggered: false },
+            { time: 19.1, text: "소박하지만 화려한 무대", type: "nobackground", triggered: false }
         ];
         
         const playButton = document.getElementById('playButton');
         const mvContainer = document.querySelector('.mv-container');
-        
-        
+        const bgm = document.getElementById('bgm');
         
         
         let startTime;
-
-
+        let currentFrame;
+        let lastFrame = 0;
 
 
 
@@ -155,13 +164,37 @@
 
         playButton.addEventListener('click', function() {
             startTime = performance.now();
+            bgm.play();
             getPlayTime();
         })
 
         function getPlayTime() {
+            
             let nowTime = performance.now() - startTime;
             document.getElementById('playTime').textContent = (nowTime / 1000).toFixed(1);
+            
 
+            // 이미지 생성부
+            currentFrame = Math.floor(nowTime / 100) + 1;
+
+            if (currentFrame !== lastFrame) {
+                const teto = mvContainer.querySelector('.teto');
+                const frameName = String(currentFrame).padStart(4, '0');
+                const prevSrc = teto.src;  // 현재(이전) src 저장
+                teto.onerror = function() { teto.src = prevSrc; };
+                teto.src = `frames/frame_${frameName}.png`;
+                lastFrame = currentFrame;
+                if ((currentFrame >= 109 && currentFrame <= 113) || 
+                    (currentFrame >= 165 && currentFrame <= 189)) {
+                    teto.style.display = 'none';
+                } else {
+                    teto.style.display = 'block';
+                }
+            }
+
+
+
+            // 자막 생성부
             for (let t = 0; t < timeline.length; t++) {
                 if (!timeline[t].triggered){
                     if ((nowTime / 1000) > timeline[t].time) {
