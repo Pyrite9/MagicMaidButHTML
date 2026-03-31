@@ -33,13 +33,47 @@
             font-family: 'Noto Serif KR', serif;
         }
 
-        .timeBar {
-            position: relative;
+        #buttonOverlay {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
 
         }
 
-        .timeBar p {
+        #playButton {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 25vh;
+            height: 25vh;
+            border-radius: 50%;
+            font-size: 15vh;
             color: white;
+            background: rgba(0, 0, 0, 0.7);
+            cursor: pointer;
+        }
+
+        .timeBar-bg {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 177.78vh;
+            height: 1.5vh;
+            background-color: white;
+        }
+
+
+        .timeBar-fill {
+            height: 1vh;
+            width: 0%;
+            background-color: red;
+            
         }
 
         .white-top {
@@ -121,12 +155,14 @@
 <body>
     <div class="mv-container">
         <!-- 여기에 가사 레이어들이 들어갈 예정 -->
+         <div id="buttonOverlay">
+            <div id="playButton">▶</div>
+         </div>
          <img class="teto">
     </div>
-    <div class="timeBar">
-        <p id="playTime"></p>
-        <button id="playButton">재생</button>
-        <audio id="bgm" src="MM.mp3"></audio>
+    <audio id="bgm" src="MM.mp3"></audio>
+    <div class="timeBar-bg">
+        <div class="timeBar-fill"></div>
     </div>
     
     <script>
@@ -139,14 +175,14 @@
             { time: 5.3, text: "다과를", type: "white-bottom", triggered: false },
             { time: 8.1, text: "소박하지만", type: "white-top", triggered: false },
             { time: 8.1, text: "화려한 무대", type: "white-bottom", triggered: false },
-            { time: 10.7, text: "과거와", type: "blackbox-center", triggered: false },
+            { time: 10.8, text: "과거와", type: "blackbox-center", triggered: false },
             { time: 11.3, text: "바이바이바이", type: "blackbox", triggered: false, top: "0%", left: "90%" },
             { time: 12.1, text: "지금을", type: "blackbox", triggered: false, top: "4%", left: "80%"},
             { time: 12.5, text: "사랑사랑사랑해", type: "blackbox", triggered: false, top: "35%", left: "73.5%"},
             { time: 14.1, text: "말할 수 있다면 아픔과", type: "blackbox", triggered: false, top: "5%", left: "63.5%" },
             { time: 15.4, text: "바이바이바이", type: "blackbox", triggered: false, top: "41%", left: "56.5%" },
             { time: 16.4, text: "오늘은 마법에 걸린 메이드", type: "center", triggered: false },
-            { time: 19.1, text: "소박하지만 화려한 무대", type: "nobackground", triggered: false }
+            { time: 18.9, text: "소박하지만 화려한 무대", type: "nobackground", triggered: false }
         ];
         
         const playButton = document.getElementById('playButton');
@@ -164,15 +200,24 @@
 
         playButton.addEventListener('click', function() {
             startTime = performance.now();
+            document.getElementById('playButton').remove();
+            document.getElementById('buttonOverlay').remove();
             bgm.play();
             getPlayTime();
         })
 
         function getPlayTime() {
             
-            let nowTime = performance.now() - startTime;
-            document.getElementById('playTime').textContent = (nowTime / 1000).toFixed(1);
+            let nowTime = performance.now() - startTime;       
+
+            // timeBar 계산
+            let progress = (nowTime / 1000 / bgm.duration) * 100;
+            document.querySelector('.timeBar-fill').style.width = progress+"%";
             
+            // 재생 완료 후 정지
+            if (nowTime / 1000 >= bgm.duration) {
+                return;
+            }
 
             // 이미지 생성부
             currentFrame = Math.floor(nowTime / 100) + 1;
